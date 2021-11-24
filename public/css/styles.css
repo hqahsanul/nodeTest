@@ -1,0 +1,19 @@
+
+body {
+  background-color: #BC8CF2;
+}
+
+.container {
+    height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.test1{
+  padding: 0 0 30px 0 ;
+}
+
+.test2{
+  padding: 0 0 30px 30px;
+}
