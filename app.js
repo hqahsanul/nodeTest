@@ -5,7 +5,6 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 //const path = require("path");
 
-
 const saltRounds = 8;
 
 const app = express();
@@ -38,79 +37,75 @@ const userSchema = new mongoose.Schema({
 const User = new mongoose.model("User", userSchema);
 
 app.get("/", function (req, res) {
-
   if (req.session.email) {
     User.findOne({ email: req.session.email }, function (err, data) {
-    if (err) {
-     console.log(err);
-     } else {
-  
-     res.render("data", { name: data.name, email: data.email,
-                dob: data.dob, });
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("data", {
+          name: data.name,
+          email: data.email,
+          dob: data.dob,
+        });
       }
-     });
-     }
-    else{
-      res.render("home");
-    }
-
+    });
+  } else {
+    res.render("home");
+  }
 });
 
 app.get("/login", function (req, res) {
-
-   if (req.session.email) {
+  if (req.session.email) {
     User.findOne({ email: req.session.email }, function (err, data) {
-    if (err) {
-     console.log(err);
-     } else {
-   
-     res.render("data", { name: data.name, email: data.email,
-                dob: data.dob, });
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("data", {
+          name: data.name,
+          email: data.email,
+          dob: data.dob,
+        });
       }
-     });
-     }
-    else{
-      res.sendFile(__dirname+"/login.html");
-    }
-  });
+    });
+  } else {
+    res.render( "login");
+  }
+});
 
 //app.get("/test", function (req, res) {
-  //User.findOne({ email: req.session.email }, function (err, data) {
-  //  if (err) {
-   //   console.log(err);
-    //} else {
-    //  console.log(data.name);
-     // res.render("test", { name: data.name });
-  //  }
- // });
+//User.findOne({ email: req.session.email }, function (err, data) {
+//  if (err) {
+//   console.log(err);
+//} else {
+//  console.log(data.name);
+// res.render("test", { name: data.name });
+//  }
+// });
 //});
 
-
 app.get("/register", function (req, res) {
-  
-if (req.session.email) {
+  if (req.session.email) {
     User.findOne({ email: req.session.email }, function (err, data) {
-    if (err) {
-     console.log(err);
-     } else {
-   
-     res.render("data", { name: data.name, email: data.email,
-                dob: data.dob, });
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("data", {
+          name: data.name,
+          email: data.email,
+          dob: data.dob,
+        });
       }
-     });
-     }
-    else{
-          res.sendFile(__dirname+"/register.html");
-    }
-
+    });
+  } else {
+    res.render("register");
+  }
 });
 
 //app.get("/data", function (req, res) {
-  //res.render("data");
+//res.render("data");
 //});
 
 app.get("/logout", function (req, res) {
- 
   if (req.session) {
     req.session.destroy(function (err) {
       if (err) {
@@ -146,58 +141,43 @@ app.post("/login", function (req, res) {
 });
 
 app.post("/register", function (req, res) {
-  
- User.findOne({ email: req.body.email }, function (err, data){
-   
-   if (data) {
-    res.render("home");
-             }else{
- bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-    if (err) {
-      console.log(err);
+  User.findOne({ email: req.body.email }, function (err, data) {
+    if (data) {
+      res.render("home");
     } else {
-      const newUser = new User({
-        name: req.body.name,
-        email: req.body.email,
-        password: hash,
-        dob: req.body.dob,
-      });
+      bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+        if (err) {
+          console.log(err);
+        } else {
+          const newUser = new User({
+            name: req.body.name,
+            email: req.body.email,
+            password: hash,
+            dob: req.body.dob,
+          });
 
-      if (req.body.password === req.body.conpassword) {
-        newUser.save(function (err) {
-          if (err) {
-            console.log(err);
-          } else {
-            User.findOne({ email: req.body.email }, function (err, data) {
-              req.session.email = data.email;
-              res.render("data", {
-                name: data.name,
-                email: data.email,
-                dob: data.dob,
-              });
+          if (req.body.password === req.body.conpassword) {
+            newUser.save(function (err) {
+              if (err) {
+                console.log(err);
+              } else {
+                User.findOne({ email: req.body.email }, function (err, data) {
+                  req.session.email = data.email;
+                  res.render("data", {
+                    name: data.name,
+                    email: data.email,
+                    dob: data.dob,
+                  });
+                });
+              }
             });
           }
-        });
-      }
+        }
+      });
     }
   });
-
-             }
-
-
-
-
-
-    });
 });
 
 app.listen(5000, function () {
   console.log("Server has started at port 5000");
 });
-
-
-
-
-
-
- 
